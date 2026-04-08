@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A GitHub Pages-friendly icebreaker bingo board for UCSC CMPM 121 / CSGD students."
+    />
+    <title>CSGD Icebreaker Bingo</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="hero">
+        <p class="eyebrow">UCSC • CMPM 121 • CSGD</p>
+        <h1>Icebreaker Bingo</h1>
+        <p class="subtitle">
+          Get a random 3×3 bingo card, then tap any square to add the name of a
+          classmate who matches it.
+        </p>
+
+        <div class="controls">
+          <button id="new-card-btn" class="primary-btn" type="button">New card</button>
+          <button id="clear-names-btn" class="secondary-btn" type="button">Clear names</button>
+          <button id="export-btn" class="success-btn" type="button">Export card</button>
+        </div>
+
+        <p id="status" class="status" aria-live="polite">Loading prompts…</p>
+      </header>
+
+      <section class="board-wrap" aria-labelledby="board-heading">
+        <div class="board-header">
+          <h2 id="board-heading">Your bingo card</h2>
+          <p>Tap a square to add or edit a name.</p>
+        </div>
+
+        <div id="bingo-board" class="bingo-board" aria-label="Bingo board"></div>
+        <p id="celebration-banner" class="celebration-banner" hidden>
+          🎉 Bingo complete! Export it and share it.
+        </p>
+        <div id="celebration-layer" class="celebration-layer" aria-hidden="true"></div>
+      </section>
+
+      <section class="info-card">
+        <h2>Customize the prompts</h2>
+        <p>
+          Edit <code>items.json</code> in this repo to change the bingo prompts,
+          then push to GitHub Pages.
+        </p>
+      </section>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
