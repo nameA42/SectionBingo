@@ -36,12 +36,14 @@ const boardWrapEl = document.querySelector(".board-wrap");
 const statusEl = document.querySelector("#status");
 const newCardBtn = document.querySelector("#new-card-btn");
 const clearNamesBtn = document.querySelector("#clear-names-btn");
+const undoClearBtn = document.querySelector("#undo-clear-btn");
 const exportBtn = document.querySelector("#export-btn");
 const celebrationBannerEl = document.querySelector("#celebration-banner");
 const celebrationLayerEl = document.querySelector("#celebration-layer");
 
 let allPrompts = [];
 let wasComplete = false;
+let lastClearedNames = null;
 let state = {
   prompts: [],
   names: {}
@@ -67,6 +69,16 @@ function isCardComplete() {
 
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function updateUndoButton() {
+  const canUndo = Boolean(lastClearedNames && Object.keys(lastClearedNames).length);
+  undoClearBtn.disabled = !canUndo;
+}
+
+function clearUndoHistory() {
+  lastClearedNames = null;
+  updateUndoButton();
 }
 
 function loadSavedState() {
@@ -99,16 +111,38 @@ function makeCard() {
     names: {}
   };
 
+  clearUndoHistory();
   saveState();
   renderBoard();
   statusEl.textContent = "Fresh card ready — tap any square to add a name.";
 }
 
 function clearNames() {
+  if (!Object.keys(state.names).length) {
+    statusEl.textContent = "There are no names to clear right now.";
+    return;
+  }
+
+  lastClearedNames = { ...state.names };
+  updateUndoButton();
   state.names = {};
   saveState();
   renderBoard();
-  statusEl.textContent = "Names cleared.";
+  statusEl.textContent = "Names cleared. Tap Undo clear to restore them.";
+}
+
+function undoClearNames() {
+  if (!lastClearedNames || !Object.keys(lastClearedNames).length) {
+    statusEl.textContent = "Nothing to undo.";
+    updateUndoButton();
+    return;
+  }
+
+  state.names = { ...lastClearedNames };
+  clearUndoHistory();
+  saveState();
+  renderBoard();
+  statusEl.textContent = "Names restored.";
 }
 
 function editName(index, prompt) {
@@ -132,6 +166,7 @@ function editName(index, prompt) {
     statusEl.textContent = "Name cleared.";
   }
 
+  clearUndoHistory();
   saveState();
   renderBoard();
 }
@@ -426,8 +461,10 @@ async function init() {
     makeCard();
   }
 
+  updateUndoButton();
   newCardBtn.addEventListener("click", makeCard);
   clearNamesBtn.addEventListener("click", clearNames);
+  undoClearBtn.addEventListener("click", undoClearNames);
   exportBtn.addEventListener("click", exportCard);
 }
 
